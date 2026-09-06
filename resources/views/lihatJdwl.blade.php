@@ -304,55 +304,6 @@
         font-weight: 600;
     }
 
-
-    /* =========================
-       TIPS
-    ========================= */
-
-    .calendar-bottom {
-        display: grid;
-
-        grid-template-columns: 2fr 1fr;
-
-        gap: 20px;
-
-        margin-top: 20px;
-    }
-
-    .tips-box {
-        background: #ffffff;
-
-        border: 1px solid #e5e7eb;
-
-        border-radius: 14px;
-
-        padding: 20px;
-    }
-
-    .tips-title {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-
-        font-size: 18px;
-        font-weight: 700;
-
-        color: #1f2937;
-
-        margin-bottom: 8px;
-    }
-
-    .tips-icon {
-        font-size: 22px;
-    }
-
-    .tips-box p {
-        color: #6b7280;
-        margin: 0;
-        line-height: 1.6;
-    }
-
-
     /* =========================
        RESPONSIVE
     ========================= */
