@@ -34,6 +34,78 @@
             background-color: #212121;
             color: white;
         }
+
+        .availability-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 100%;
+
+            z-index: 9999;
+        }
+
+        .availability-modal-overlay {
+            position: absolute;
+
+            width: 100%;
+            height: 100%;
+
+            background: rgba(0, 0, 0, 0.45);
+        }
+
+        .availability-modal-content {
+            position: relative;
+
+            width: 90%;
+            max-width: 450px;
+
+            margin: 180px auto 0;
+
+            background: white;
+
+            border-radius: 18px;
+
+            padding: 35px;
+
+            text-align: center;
+
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+
+            animation: popupShow 0.2s ease;
+        }
+
+        .availability-icon {
+            font-size: 45px;
+            margin-bottom: 15px;
+        }
+
+        .availability-modal-content h3 {
+            margin-bottom: 15px;
+
+            color: #1f2937;
+        }
+
+        .availability-modal-content p {
+            color: #6b7280;
+
+            margin-bottom: 8px;
+        }
+
+        @keyframes popupShow {
+
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+        }
     </style>
 </head>
 

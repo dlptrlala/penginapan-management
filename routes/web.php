@@ -226,7 +226,10 @@ Route::get('/admin/dashboard', [adminController::class, 'dashboard'])
 
 
 Route::middleware('auth')->group(function () {
-
+    // Mengecek ketersediaan kamar berdasarkan tanggal
+    Route::get('/reservasi/check-availability', [formController::class, 'checkAvailability'])
+        ->name('reservasi.checkAvailability');
+        
     // Menampilkan form pemesanan kamar
     Route::get('/reservasi/{idKamar}', [formController::class, 'create'])
         ->name('reservasi.create');

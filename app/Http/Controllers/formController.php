@@ -40,22 +40,55 @@ class formController extends Controller
 
         $kamar = Kamar::findOrFail($request->idKamar);
 
-        // Cek apakah kamar sedang dibooking
-        $bentrok = DetailReservasi::where('idKamar', $kamar->idKamar)
+        // // Cek apakah kamar sedang dibooking
+        // $bentrok = DetailReservasi::where('idKamar', $kamar->idKamar)
+        //     ->whereHas('reservasi', function ($query) use ($request) {
+        //         $query->whereIn('statusReservasi', [
+        //             'menunggu',
+        //             'dikonfirmasi'
+        //         ])
+        //             ->where('tglCekIn', '<', $request->tglCekOut)
+        //             ->where('tglCekOut', '>', $request->tglCekIn);
+        //     })
+        //     ->exists();
+
+        // if ($bentrok) {
+        //     return back()
+        //         ->withInput()
+        //         ->with('error', 'Kamar sudah dibooking pada tanggal tersebut.');
+        // }
+        $bentrok = \App\Models\DetailReservasi::where(
+            'idKamar',
+            $request->idKamar
+        )
             ->whereHas('reservasi', function ($query) use ($request) {
+
                 $query->whereIn('statusReservasi', [
                     'menunggu',
                     'dikonfirmasi'
                 ])
-                    ->where('tglCekIn', '<', $request->tglCekOut)
-                    ->where('tglCekOut', '>', $request->tglCekIn);
+                    ->where(
+                        'tglCekIn',
+                        '<',
+                        $request->tglCekOut
+                    )
+                    ->where(
+                        'tglCekOut',
+                        '>',
+                        $request->tglCekIn
+                    );
             })
             ->exists();
 
+
         if ($bentrok) {
+
             return back()
                 ->withInput()
-                ->with('error', 'Kamar sudah dibooking pada tanggal tersebut.');
+                ->with(
+                    'error',
+                    'Kamar tidak tersedia pada tanggal yang dipilih. Silakan pilih tanggal lain atau kamar lain.'
+                );
         }
 
         // Cek kapasitas kamar
@@ -112,6 +145,71 @@ class formController extends Controller
             ->get();
 
         return view('bookingSaya', compact('reservations'));
+    }
+
+    public function checkAvailability(Request $request)
+    {
+        $request->validate([
+            'idKamar' => 'required|exists:kamar,idKamar',
+            'tglCekIn' => 'required|date',
+            'tglCekOut' => 'required|date|after:tglCekIn',
+        ]);
+
+        $bentrok = \App\Models\DetailReservasi::where(
+            'idKamar',
+            $request->idKamar
+        )
+            ->whereHas('reservasi', function ($query) use ($request) {
+
+                $query->whereIn('statusReservasi', [
+                    'menunggu',
+                    'dikonfirmasi'
+                ])
+
+                    /*
+        |--------------------------------------------------------------------------
+        | CEK OVERLAP
+        |--------------------------------------------------------------------------
+        |
+        | Booking lama:
+        |     check-in  < check-out baru
+        |
+        | DAN
+        |
+        | Booking lama:
+        |     check-out > check-in baru
+        |
+        */
+
+                    ->where(
+                        'tglCekIn',
+                        '<',
+                        $request->tglCekOut
+                    )
+                    ->where(
+                        'tglCekOut',
+                        '>',
+                        $request->tglCekIn
+                    );
+            })
+            ->exists();
+
+
+        if ($bentrok) {
+
+            return response()->json([
+                'tersedia' => false,
+                'message' =>
+                'Kamar tidak tersedia pada tanggal yang dipilih. Silakan pilih tanggal lain atau kamar lain.'
+            ]);
+        }
+
+
+        return response()->json([
+            'tersedia' => true,
+            'message' =>
+            'Kamar tersedia pada tanggal yang dipilih.'
+        ]);
     }
     // public function store(Request $request, $idKamar)
     // {

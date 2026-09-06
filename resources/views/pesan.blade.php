@@ -17,25 +17,25 @@
 
     {{-- Pesan error dari controller --}}
     @if(session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
-        </div>
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
     @endif
 
 
     {{-- Error validasi --}}
     @if($errors->any())
-        <div class="alert alert-danger">
+    <div class="alert alert-danger">
 
-            <strong>Terdapat kesalahan:</strong>
+        <strong>Terdapat kesalahan:</strong>
 
-            <ul class="mb-0 mt-2">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+        <ul class="mb-0 mt-2">
+            @foreach($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
 
-        </div>
+    </div>
     @endif
 
 
@@ -49,8 +49,7 @@
 
                     <form
                         action="{{ route('reservasi.store') }}"
-                        method="POST"
-                    >
+                        method="POST">
 
                         @csrf
 
@@ -75,8 +74,7 @@
                                 name="nama"
                                 class="form-control"
                                 value="{{ auth()->user()->name }}"
-                                readonly
-                            >
+                                readonly>
 
                         </div>
 
@@ -92,8 +90,7 @@
                                 name="noWA"
                                 class="form-control"
                                 value="{{ auth()->user()->noWA }}"
-                                required
-                            >
+                                required>
 
                         </div>
 
@@ -157,8 +154,7 @@
                         <input
                             type="hidden"
                             name="idKamar"
-                            value="{{ $kamar->idKamar }}"
-                        >
+                            value="{{ $kamar->idKamar }}">
 
 
 
@@ -186,8 +182,7 @@
                                     class="form-control"
                                     min="{{ date('Y-m-d') }}"
                                     value="{{ old('tglCekIn') }}"
-                                    required
-                                >
+                                    required>
 
                             </div>
 
@@ -204,12 +199,15 @@
                                     id="tglCekOut"
                                     class="form-control"
                                     value="{{ old('tglCekOut') }}"
-                                    required
-                                >
+                                    required>
 
                             </div>
 
                         </div>
+                        <div
+                            id="availability-message"
+                            style="display: none;"
+                            class="mt-2"></div>
 
 
                         <div class="mb-4">
@@ -226,8 +224,7 @@
                                 min="1"
                                 max="{{ $kamar->kapasitasKamar }}"
                                 value="{{ old('jumlahTamu', 1) }}"
-                                required
-                            >
+                                required>
 
                             <small class="text-muted">
                                 Maksimal
@@ -317,8 +314,7 @@
                             <select
                                 name="metodeByr"
                                 class="form-select"
-                                required
-                            >
+                                required>
 
                                 <option value="">
                                     -- Pilih metode pembayaran --
@@ -326,22 +322,19 @@
 
                                 <option
                                     value="Transfer Bank"
-                                    {{ old('metodeByr') == 'Transfer Bank' ? 'selected' : '' }}
-                                >
+                                    {{ old('metodeByr') == 'Transfer Bank' ? 'selected' : '' }}>
                                     Transfer Bank
                                 </option>
 
                                 <option
                                     value="QRIS"
-                                    {{ old('metodeByr') == 'QRIS' ? 'selected' : '' }}
-                                >
+                                    {{ old('metodeByr') == 'QRIS' ? 'selected' : '' }}>
                                     QRIS
                                 </option>
 
                                 <option
                                     value="Cash"
-                                    {{ old('metodeByr') == 'Cash' ? 'selected' : '' }}
-                                >
+                                    {{ old('metodeByr') == 'Cash' ? 'selected' : '' }}>
                                     Cash
                                 </option>
 
@@ -359,16 +352,14 @@
 
                             <a
                                 href="{{ route('rooms.view') }}"
-                                class="btn btn-secondary"
-                            >
+                                class="btn btn-secondary">
                                 Kembali
                             </a>
 
 
                             <button
                                 type="submit"
-                                class="btn btn-primary"
-                            >
+                                class="btn btn-primary">
                                 Pesan Sekarang
                             </button>
 
@@ -386,32 +377,143 @@
 
 </div>
 
+<!-- POPUP KAMAR TIDAK TERSEDIA -->
 
+<div
+    id="availability-modal"
+    class="availability-modal"
+    style="display: none;">
 
-{{-- ========================= --}}
-{{-- JAVASCRIPT HARGA --}}
-{{-- ========================= --}}
+    <div class="availability-modal-overlay"></div>
+
+    <div class="availability-modal-content">
+
+        <div class="availability-icon">
+            ⚠️
+        </div>
+
+        <h3>
+            Kamar Tidak Tersedia
+        </h3>
+
+        <p>
+            {{ $kamar->namaKamar }} sudah dibooking
+            pada tanggal yang kamu pilih.
+        </p>
+
+        <p>
+            Silakan pilih tanggal lain atau kamar lain.
+        </p>
+
+        <button
+            type="button"
+            id="close-availability-modal"
+            class="btn btn-primary">
+            Pilih Lagi
+        </button>
+
+    </div>
+
+</div>
+
+{{-- ========================================================= --}}
+{{-- JAVASCRIPT --}}
+{{-- ========================================================= --}}
 
 <script>
 
-    const checkIn = document.getElementById('tglCekIn');
-    const checkOut = document.getElementById('tglCekOut');
+document.addEventListener('DOMContentLoaded', function () {
 
-    const jumlahMalam = document.getElementById('jumlahMalam');
-    const totalHarga = document.getElementById('totalHarga');
+    /*
+    |--------------------------------------------------------------------------
+    | ELEMENT
+    |--------------------------------------------------------------------------
+    */
 
-    const hargaPerMalam = {{ $kamar->hargaKamar }};
+    const form =
+        document.querySelector('form');
 
+    const checkIn =
+        document.getElementById('tglCekIn');
+
+    const checkOut =
+        document.getElementById('tglCekOut');
+
+    const jumlahMalam =
+        document.getElementById('jumlahMalam');
+
+    const totalHarga =
+        document.getElementById('totalHarga');
+
+    const availabilityMessage =
+        document.getElementById('availability-message');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | POPUP
+    |--------------------------------------------------------------------------
+    */
+
+    const availabilityModal =
+        document.getElementById('availability-modal');
+
+    const closeAvailabilityModal =
+        document.getElementById('close-availability-modal');
+
+    const modalOverlay =
+        document.querySelector(
+            '.availability-modal-overlay'
+        );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | DATA KAMAR DARI LARAVEL
+    |--------------------------------------------------------------------------
+    */
+
+    const idKamar =
+        {{ $kamar->idKamar }};
+
+    const hargaPerMalam =
+        {{ $kamar->hargaKamar }};
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | STATUS KAMAR
+    |--------------------------------------------------------------------------
+    |
+    | true  = kamar tersedia
+    | false = kamar tidak tersedia
+    |
+    */
+
+    let kamarTersedia = true;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | HITUNG HARGA
+    |--------------------------------------------------------------------------
+    */
 
     function hitungHarga() {
 
-        if (!checkIn.value || !checkOut.value) {
+        if (
+            !checkIn.value ||
+            !checkOut.value
+        ) {
 
-            jumlahMalam.textContent = '0 malam';
+            jumlahMalam.textContent =
+                '0 malam';
 
-            totalHarga.textContent = 'Rp 0';
+            totalHarga.textContent =
+                'Rp 0';
 
             return;
+
         }
 
 
@@ -427,16 +529,20 @@
 
 
         const malam =
-            selisih / (1000 * 60 * 60 * 24);
+            selisih /
+            (1000 * 60 * 60 * 24);
 
 
         if (malam <= 0) {
 
-            jumlahMalam.textContent = '0 malam';
+            jumlahMalam.textContent =
+                '0 malam';
 
-            totalHarga.textContent = 'Rp 0';
+            totalHarga.textContent =
+                'Rp 0';
 
             return;
+
         }
 
 
@@ -455,16 +561,330 @@
     }
 
 
+    /*
+    |--------------------------------------------------------------------------
+    | CEK KETERSEDIAAN KE DATABASE
+    |--------------------------------------------------------------------------
+    */
+
+    async function checkRoomAvailability() {
+
+        /*
+        |--------------------------------------------------------------------------
+        | Kalau belum memilih kedua tanggal
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            !checkIn.value ||
+            !checkOut.value
+        ) {
+
+            kamarTersedia = true;
+
+            availabilityMessage.style.display =
+                'none';
+
+            return;
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Check-out harus setelah check-in
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            checkOut.value <= checkIn.value
+        ) {
+
+            kamarTersedia = false;
+
+            availabilityMessage.style.display =
+                'none';
+
+            availabilityModal.style.display =
+                'block';
+
+            return;
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | TAMPILKAN LOADING
+        |--------------------------------------------------------------------------
+        */
+
+        availabilityMessage.style.display =
+            'block';
+
+        availabilityMessage.innerHTML = `
+            <div class="alert alert-secondary">
+                🔍 Mengecek ketersediaan kamar...
+            </div>
+        `;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | URL REQUEST
+        |--------------------------------------------------------------------------
+        */
+
+        const url =
+            "{{ route('reservasi.checkAvailability') }}" +
+            "?idKamar=" +
+            encodeURIComponent(idKamar) +
+            "&tglCekIn=" +
+            encodeURIComponent(checkIn.value) +
+            "&tglCekOut=" +
+            encodeURIComponent(checkOut.value);
+
+
+        try {
+
+            const response =
+                await fetch(url);
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Kalau server error
+            |--------------------------------------------------------------------------
+            */
+
+            if (!response.ok) {
+
+                throw new Error(
+                    'Gagal menghubungi server.'
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | KAMAR TIDAK TERSEDIA
+            |--------------------------------------------------------------------------
+            */
+
+            if (!data.tersedia) {
+
+                kamarTersedia = false;
+
+
+                availabilityMessage.style.display =
+                    'block';
+
+
+                availabilityMessage.innerHTML = `
+                    <div class="alert alert-danger">
+                        ❌ Kamar tidak tersedia pada tanggal yang dipilih.
+                    </div>
+                `;
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | LANGSUNG MUNCUL POPUP
+                |--------------------------------------------------------------------------
+                */
+
+                availabilityModal.style.display =
+                    'block';
+
+
+                return;
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | KAMAR TERSEDIA
+            |--------------------------------------------------------------------------
+            */
+
+            kamarTersedia = true;
+
+
+            availabilityMessage.style.display =
+                'block';
+
+
+            availabilityMessage.innerHTML = `
+                <div class="alert alert-success">
+                    ✓ Kamar tersedia pada tanggal yang dipilih.
+                </div>
+            `;
+
+
+        } catch (error) {
+
+            console.error(error);
+
+
+            kamarTersedia = false;
+
+
+            availabilityMessage.style.display =
+                'block';
+
+
+            availabilityMessage.innerHTML = `
+                <div class="alert alert-warning">
+                    ⚠️ Tidak dapat mengecek ketersediaan kamar.
+                    Silakan coba lagi.
+                </div>
+            `;
+
+        }
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | KETIKA CHECK-IN DIPILIH
+    |--------------------------------------------------------------------------
+    */
+
     checkIn.addEventListener(
         'change',
-        hitungHarga
+        function () {
+
+            hitungHarga();
+
+            /*
+            | Kalau check-out sudah dipilih,
+            | langsung cek juga.
+            */
+
+            if (checkOut.value) {
+
+                checkRoomAvailability();
+
+            }
+
+        }
     );
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | KETIKA CHECK-OUT DIPILIH
+    |--------------------------------------------------------------------------
+    |
+    | INI YANG KAMU MAU.
+    |
+    | Begitu customer selesai memilih check-out,
+    | langsung cek database.
+    |--------------------------------------------------------------------------
+    */
 
     checkOut.addEventListener(
         'change',
-        hitungHarga
+        function () {
+
+            hitungHarga();
+
+            checkRoomAvailability();
+
+        }
     );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | TUTUP POPUP
+    |--------------------------------------------------------------------------
+    */
+
+    closeAvailabilityModal.addEventListener(
+        'click',
+        function () {
+
+            availabilityModal.style.display =
+                'none';
+
+        }
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | KLIK AREA LUAR POPUP
+    |--------------------------------------------------------------------------
+    */
+
+    modalOverlay.addEventListener(
+        'click',
+        function () {
+
+            availabilityModal.style.display =
+                'none';
+
+        }
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | SAAT SUBMIT
+    |--------------------------------------------------------------------------
+    |
+    | Ini tetap kita pertahankan sebagai pengaman.
+    | BUKAN popup utama.
+    |--------------------------------------------------------------------------
+    */
+
+    form.addEventListener(
+        'submit',
+        async function (event) {
+
+            /*
+            | Kalau tanggal belum lengkap,
+            | biarkan validasi HTML bekerja.
+            */
+
+            if (
+                !checkIn.value ||
+                !checkOut.value
+            ) {
+
+                return;
+
+            }
+
+
+            /*
+            | Kalau sebelumnya sudah diketahui bentrok,
+            | jangan submit.
+            */
+
+            if (!kamarTersedia) {
+
+                event.preventDefault();
+
+                availabilityModal.style.display =
+                    'block';
+
+                return;
+
+            }
+
+        }
+    );
+
+});
 
 </script>
 
