@@ -29,5 +29,12 @@ class Kamar extends Model
         'statusKamar',
         'kapasitasKamar',
     ];
-
+    public function detailReservasi()
+    {
+        return $this->hasMany(
+            DetailReservasi::class,
+            'idKamar',
+            'idKamar'
+        );
+    }
 }

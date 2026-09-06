@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\homeController;
+use App\Http\Controllers\adminController;
+use App\Http\Controllers\kamarController;
+use App\Http\Controllers\formController;
+use App\Http\Controllers\karyawanController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -40,7 +44,7 @@ Route::get('/lihatJdwl', function () {
 
 
 
-use App\Http\Controllers\adminController;
+
 
 // ------------------------------------------------------------------------ view admin
 // Route untuk Admin Dashboard
@@ -54,16 +58,16 @@ Route::get('/admin/reviews', [adminController::class, 'reviews'])->name('admin.r
 // -----------------------------SAMPE ITU, SAMA
 
 
-use App\Http\Controllers\kamarController;
+
 // BAGIAN ADMIN
 // ----------------------YANG INI UDH BISA 
 // Daftar kamar
-Route::get('/admin/rooms', [kamarController::class, 'index'])->name('admin.daftarKamar');
+// Route::get('/admin/rooms', [kamarController::class, 'index'])->name('admin.daftarKamar');
 // Halaman tambah kamar
 Route::get('/rooms/create', [kamarController::class, 'create'])->name('kelolaKamar');
 Route::post('/admin/rooms', [kamarController::class, 'index'])->name('admin.daftarKamar');
 // Simpan kamar baru
-Route::post('/admin/orders', [kamarController::class, 'store'])->name('admin.store');
+// Route::post('/admin/orders', [kamarController::class, 'store'])->name('admin.store');
 // Hapus kamar
 Route::delete('/rooms/{idKamar}', [kamarController::class, 'destroy'])->name('rooms.destroy');
 
@@ -88,12 +92,61 @@ Route::get('/rooms/{idKamar}/edit', [kamarController::class, 'edit'])->name('roo
 Route::put('/rooms/{idKamar}', [kamarController::class, 'update'])->name('rooms.update');
 
 
-use App\Http\Controllers\karyawanController;
+
 Route::get('/contact', [karyawanController::class, 'index'])->name('contact');
 // Route::post('/contact/send', [karyawanController::class, 'sendMessage'])->name('contact.send');
 
 
-use App\Http\Controllers\formController;
+
 // Route untuk menampilkan form pemesanan
 // Route::get('/reservasi', [formController::class, 'view'])->name('reservasi');
-Route::post('/reservasi/{idKamar}', [formController::class, 'store'])->name('reservasi');
+// Route::post('/reservasi/{idKamar}', [formController::class, 'store'])->name('reservasi');
+
+// =========================
+// ADMIN - KAMAR
+// =========================
+
+Route::get('/admin/rooms', [kamarController::class, 'index'])
+    ->name('admin.daftarKamar');
+
+Route::get('/rooms/create', [kamarController::class, 'create'])
+    ->name('kelolaKamar');
+
+Route::post('/admin/rooms', [kamarController::class, 'store'])
+    ->name('admin.store');
+
+Route::get('/rooms/{idKamar}/edit', [kamarController::class, 'edit'])
+    ->name('rooms.edit');
+
+Route::put('/rooms/{idKamar}', [kamarController::class, 'update'])
+    ->name('rooms.update');
+
+Route::delete('/rooms/{idKamar}', [kamarController::class, 'destroy'])
+    ->name('rooms.destroy');
+
+
+// =========================
+// CUSTOMER - KAMAR
+// =========================
+
+Route::get('/room', [kamarController::class, 'view'])
+    ->name('rooms.view');
+
+Route::get('/room/filter', [kamarController::class, 'showFilter'])
+    ->name('rooms.index');
+
+Route::get('/rooms/available', [kamarController::class, 'showAvailableRooms'])
+    ->name('rooms.available');
+
+
+// =========================
+// RESERVASI
+// =========================
+
+// Menampilkan form booking
+Route::get('/reservasi/{idKamar}', [formController::class, 'create'])
+    ->name('reservasi.create');
+
+// Menyimpan booking
+Route::post('/reservasi', [formController::class, 'store'])
+    ->name('reservasi.store');

@@ -89,13 +89,23 @@
 <div class="container my-5">
     <h1 class="text-center mb-4">Form Pemesanan Homestay</h1>
 
-    <form action="#" method="POST" class="form-pemesanan">
+    <form action="{{ route('reservasi.store') }}" method="POST" class="form-pemesanan">
         @csrf
+
+        <input
+            type="hidden"
+            name="idKamar"
+            value="{{ $kamar->idKamar }}">
 
         <div class="card shadow mb-4">
             <div class="card-body">
                 <h3 class="card-title">Nama Pemesan</h3>
-                <input type="text" class="form-control" name="nama_pemesan" placeholder="Nama lengkap" required>
+                <!-- <input type="text" class="form-control" name="nama_pemesan" placeholder="Nama lengkap" required> -->
+                <input
+                    type="text"
+                    name="nama"
+                    class="form-control"
+                    required>
             </div>
         </div>
 
@@ -104,11 +114,21 @@
                 <h3 class="card-title">Tanggal Booking</h3>
                 <div class="form-group">
                     <label for="check_in">Tanggal Check-in</label>
-                    <input type="date" class="form-control" id="check_in" name="check_in" required>
+                    <input
+                        type="date"
+                        name="tglCekIn"
+                        class="form-control"
+                        required>
+                    <!-- <input type="date" class="form-control" id="check_in" name="check_in" required> -->
                 </div>
                 <div class="form-group">
                     <label for="check_out">Tanggal Check-out</label>
-                    <input type="date" class="form-control" id="check_out" name="check_out" required>
+                    <input
+                        type="date"
+                        name="tglCekOut"
+                        class="form-control"
+                        required>
+                    <!-- <input type="date" class="form-control" id="check_out" name="check_out" required> -->
                 </div>
                 <div class="form-group mt-3">
                     <label for="jumlah_hari">Jumlah Malam</label>
@@ -120,7 +140,13 @@
         <div class="card shadow mb-4">
             <div class="card-body">
                 <h3 class="card-title">Jumlah Orang</h3>
-                <input type="number" class="form-control" name="jumlah_orang" placeholder="Jumlah orang" required>
+                <input
+                    type="number"
+                    name="jumlahTamu"
+                    class="form-control"
+                    min="1"
+                    required>
+                <!-- <input type="number" class="form-control" name="jumlah_orang" placeholder="Jumlah orang" required> -->
             </div>
         </div>
 
@@ -141,19 +167,30 @@
         <div class="card shadow mb-4">
             <div class="card-body">
                 <h3 class="card-title">Metode Pembayaran</h3>
-                <select class="form-control" name="metode_bayar" required>
+                <select name="metodeByr" class="form-control" required>
+                    <option value="">-- Pilih metode pembayaran --</option>
+                    <option value="Transfer Bank">Transfer Bank</option>
+                    <option value="QRIS">QRIS</option>
+                    <option value="Cash">Cash</option>
+                </select>
+                <!-- <select class="form-control" name="metode_bayar" required>
                     <option value="transfer">Transfer Bank</option>
                     <option value="cash">Cash</option>
                     <option value="ovo">OVO</option>
                     <option value="gopay">GoPay</option>
-                </select>
+                </select> -->
             </div>
         </div>
 
         <div class="card shadow mb-4">
             <div class="card-body">
                 <h3 class="card-title">Nomor Telepon WA</h3>
-                <input type="tel" class="form-control" name="no_telp" placeholder="Nomor telepon WhatsApp" required>
+                <input
+                    type="text"
+                    name="noWA"
+                    class="form-control"
+                    required>
+                <!-- <input type="tel" class="form-control" name="no_telp" placeholder="Nomor telepon WhatsApp" required> -->
             </div>
         </div>
 

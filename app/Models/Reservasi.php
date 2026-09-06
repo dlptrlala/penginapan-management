@@ -15,13 +15,40 @@ class Reservasi extends Model
     protected $primaryKey = 'idReservasi';
 
     protected $fillable = [
+        // 'idUser',
+        // 'idKamar',
+        // 'tglCekIn',
+        // 'tglCekOut',
+        // 'hargaTotal',
+        // 'metodeByr',
+        // 'statusReservasi',
+        // 'tglReservasi',
         'idUser',
-        'idKamar',
+        'tipeReservasi',
         'tglCekIn',
         'tglCekOut',
+        'jumlahTamu',
         'hargaTotal',
         'metodeByr',
         'statusReservasi',
         'tglReservasi',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(
+            User::class,
+            'idUser',
+            'id'
+        );
+    }
+
+    public function detailReservasi()
+    {
+        return $this->hasMany(
+            DetailReservasi::class,
+            'idReservasi',
+            'idReservasi'
+        );
+    }
 }
