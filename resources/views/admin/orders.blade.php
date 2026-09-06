@@ -5,7 +5,6 @@
 @section('content')
 
 <style>
-
     /* =========================
        GENERAL
     ========================= */
@@ -372,12 +371,45 @@
         }
 
     }
-
 </style>
 
 
 <div class="container-fluid py-4 orders-page">
 
+    {{-- NOTIFIKASI BERHASIL --}}
+    @if(session('success'))
+
+    <div
+        class="alert alert-success alert-dismissible fade show"
+        role="alert">
+        {{ session('success') }}
+
+        <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"></button>
+
+    </div>
+
+    @endif
+
+
+    {{-- NOTIFIKASI ERROR --}}
+    @if(session('error'))
+
+    <div
+        class="alert alert-danger alert-dismissible fade show"
+        role="alert">
+        {{ session('error') }}
+
+        <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"></button>
+
+    </div>
+
+    @endif
     {{-- HEADER --}}
     <div class="orders-header">
 
@@ -404,255 +436,243 @@
 
             @if($reservations->count() > 0)
 
-                <div class="table-wrapper">
+            <div class="table-wrapper">
 
-                    <table class="orders-table">
+                <table class="orders-table">
 
-                        <thead>
-                            <tr>
+                    <thead>
+                        <tr>
 
-                                <th>No</th>
-                                <th>Pelanggan</th>
-                                <th>Kamar</th>
-                                <th>Check In</th>
-                                <th>Check Out</th>
-                                <th>Tamu</th>
-                                <th>Total</th>
-                                <th>Status</th>
-                                <th>Aksi</th>
+                            <th>No</th>
+                            <th>Pelanggan</th>
+                            <th>Kamar</th>
+                            <th>Check In</th>
+                            <th>Check Out</th>
+                            <th>Tamu</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
 
-                            </tr>
-                        </thead>
+                        </tr>
+                    </thead>
 
 
-                        <tbody>
+                    <tbody>
 
-                            @foreach($reservations as $reservation)
+                        @foreach($reservations as $reservation)
 
-                                <tr>
+                        <tr>
 
-                                    {{-- NO --}}
-                                    <td>
-                                        {{ $loop->iteration }}
-                                    </td>
+                            {{-- NO --}}
+                            <td>
+                                {{ $loop->iteration }}
+                            </td>
 
 
-                                    {{-- PELANGGAN --}}
-                                    <td>
+                            {{-- PELANGGAN --}}
+                            <td>
 
-                                        <div class="customer-name">
-                                            {{ $reservation->user->name ?? 'Tidak diketahui' }}
-                                        </div>
+                                <div class="customer-name">
+                                    {{ $reservation->user->name ?? 'Tidak diketahui' }}
+                                </div>
 
-                                        <div class="customer-phone">
-                                            {{ $reservation->user->noWA ?? '-' }}
-                                        </div>
+                                <div class="customer-phone">
+                                    {{ $reservation->user->noWA ?? '-' }}
+                                </div>
 
-                                    </td>
+                            </td>
 
 
-                                    {{-- KAMAR --}}
-                                    <td>
+                            {{-- KAMAR --}}
+                            <td>
 
-                                        @forelse($reservation->detailReservasi as $detail)
+                                @forelse($reservation->detailReservasi as $detail)
 
-                                            <span class="room-badge">
-                                                {{ $detail->kamar->namaKamar ?? 'Kamar tidak ditemukan' }}
-                                            </span>
+                                <span class="room-badge">
+                                    {{ $detail->kamar->namaKamar ?? 'Kamar tidak ditemukan' }}
+                                </span>
 
-                                        @empty
+                                @empty
 
-                                            <span class="text-muted">
-                                                -
-                                            </span>
+                                <span class="text-muted">
+                                    -
+                                </span>
 
-                                        @endforelse
+                                @endforelse
 
-                                    </td>
+                            </td>
 
 
-                                    {{-- CHECK IN --}}
-                                    <td>
-                                        {{ \Carbon\Carbon::parse($reservation->tglCekIn)->format('d M Y') }}
-                                    </td>
+                            {{-- CHECK IN --}}
+                            <td>
+                                {{ \Carbon\Carbon::parse($reservation->tglCekIn)->format('d M Y') }}
+                            </td>
 
 
-                                    {{-- CHECK OUT --}}
-                                    <td>
-                                        {{ \Carbon\Carbon::parse($reservation->tglCekOut)->format('d M Y') }}
-                                    </td>
+                            {{-- CHECK OUT --}}
+                            <td>
+                                {{ \Carbon\Carbon::parse($reservation->tglCekOut)->format('d M Y') }}
+                            </td>
 
 
-                                    {{-- TAMU --}}
-                                    <td>
-                                        {{ $reservation->jumlahTamu }} orang
-                                    </td>
+                            {{-- TAMU --}}
+                            <td>
+                                {{ $reservation->jumlahTamu }} orang
+                            </td>
 
 
-                                    {{-- TOTAL --}}
-                                    <td>
-                                        Rp {{ number_format($reservation->hargaTotal, 0, ',', '.') }}
-                                    </td>
+                            {{-- TOTAL --}}
+                            <td>
+                                Rp {{ number_format($reservation->hargaTotal, 0, ',', '.') }}
+                            </td>
 
 
-                                    {{-- STATUS --}}
-                                    <td>
+                            {{-- STATUS --}}
+                            <td>
 
-                                        @if($reservation->statusReservasi == 'menunggu')
+                                @if($reservation->statusReservasi == 'menunggu')
 
-                                            <span class="status-badge status-menunggu">
-                                                Menunggu
-                                            </span>
+                                <span class="status-badge status-menunggu">
+                                    Menunggu
+                                </span>
 
-                                        @elseif($reservation->statusReservasi == 'dikonfirmasi')
+                                @elseif($reservation->statusReservasi == 'dikonfirmasi')
 
-                                            <span class="status-badge status-dikonfirmasi">
-                                                Dikonfirmasi
-                                            </span>
+                                <span class="status-badge status-dikonfirmasi">
+                                    Dikonfirmasi
+                                </span>
 
-                                        @elseif($reservation->statusReservasi == 'dibatalkan')
+                                @elseif($reservation->statusReservasi == 'dibatalkan')
 
-                                            <span class="status-badge status-dibatalkan">
-                                                Dibatalkan
-                                            </span>
+                                <span class="status-badge status-dibatalkan">
+                                    Dibatalkan
+                                </span>
 
-                                        @else
-
-                                            <span class="status-badge status-default">
-                                                {{ ucfirst($reservation->statusReservasi) }}
-                                            </span>
-
-                                        @endif
-
-                                    </td>
-
-
-                                    {{-- AKSI --}}
-                                    <td>
-
-                                        <div class="action-buttons">
-
-                                            {{-- VIEW --}}
-                                            <a
-                                                href="{{ route('admin.orders.show', $reservation->idReservasi) }}"
-                                                class="action-button action-view"
-                                                title="Lihat Detail"
-                                            >
+                                @else
 
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    stroke="currentColor"
-                                                    stroke-width="2"
-                                                >
-                                                    <path
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                                                    />
+                                <span class="status-badge status-default">
+                                    {{ ucfirst($reservation->statusReservasi) }}
+                                </span>
 
-                                                    <circle
-                                                        cx="12"
-                                                        cy="12"
-                                                        r="3"
-                                                    />
+                                @endif
 
-                                                </svg>
+                            </td>
 
-                                            </a>
 
+                            {{-- AKSI --}}
+                            <td>
 
-                                            {{-- KONFIRMASI --}}
-                                            @if($reservation->statusReservasi == 'menunggu')
+                                <div class="action-buttons">
 
-                                                <form
-                                                    action="{{ route('admin.orders.confirm', $reservation->idReservasi) }}"
-                                                    method="POST"
-                                                >
+                                    {{-- VIEW --}}
+                                    <a
+                                        href="{{ route('admin.orders.show', $reservation->idReservasi) }}"
+                                        class="action-button action-view"
+                                        title="Lihat Detail">
 
-                                                    @csrf
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            stroke-width="2">
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
 
-                                                    <button
-                                                        type="submit"
-                                                        class="action-button action-confirm"
-                                                        title="Konfirmasi"
-                                                        onclick="return confirm('Konfirmasi pesanan ini?')"
-                                                    >
+                                            <circle
+                                                cx="12"
+                                                cy="12"
+                                                r="3" />
 
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            fill="none"
-                                                            viewBox="0 0 24 24"
-                                                            stroke="currentColor"
-                                                            stroke-width="2"
-                                                        >
-                                                            <path
-                                                                stroke-linecap="round"
-                                                                stroke-linejoin="round"
-                                                                d="M5 13l4 4L19 7"
-                                                            />
-                                                        </svg>
+                                        </svg>
 
-                                                    </button>
+                                    </a>
 
-                                                </form>
 
+                                    {{-- KONFIRMASI --}}
+                                    @if($reservation->statusReservasi == 'menunggu')
 
-                                                {{-- BATALKAN --}}
-                                                <form
-                                                    action="{{ route('admin.orders.cancel', $reservation->idReservasi) }}"
-                                                    method="POST"
-                                                >
+                                    <form
+                                        action="{{ route('admin.orders.confirm', $reservation->idReservasi) }}"
+                                        method="POST">
 
-                                                    @csrf
+                                        @csrf
 
-                                                    <button
-                                                        type="submit"
-                                                        class="action-button action-cancel"
-                                                        title="Batalkan"
-                                                        onclick="return confirm('Batalkan pesanan ini?')"
-                                                    >
+                                        <button
+                                            type="submit"
+                                            class="action-button action-confirm"
+                                            title="Konfirmasi"
+                                            onclick="return confirm('Konfirmasi pesanan ini?')">
 
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            fill="none"
-                                                            viewBox="0 0 24 24"
-                                                            stroke="currentColor"
-                                                            stroke-width="2"
-                                                        >
-                                                            <path
-                                                                stroke-linecap="round"
-                                                                stroke-linejoin="round"
-                                                                d="M6 18L18 6M6 6l12 12"
-                                                            />
-                                                        </svg>
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                                stroke-width="2">
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    d="M5 13l4 4L19 7" />
+                                            </svg>
 
-                                                    </button>
+                                        </button>
 
-                                                </form>
+                                    </form>
 
-                                            @endif
 
-                                        </div>
+                                    {{-- BATALKAN --}}
+                                    <form
+                                        action="{{ route('admin.orders.cancel', $reservation->idReservasi) }}"
+                                        method="POST">
 
-                                    </td>
+                                        @csrf
 
-                                </tr>
+                                        <button
+                                            type="submit"
+                                            class="action-button action-cancel"
+                                            title="Batalkan"
+                                            onclick="return confirm('Batalkan pesanan ini?')">
 
-                            @endforeach
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                                stroke-width="2">
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
 
-                        </tbody>
+                                        </button>
 
-                    </table>
+                                    </form>
 
-                </div>
+                                    @endif
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        @endforeach
+
+                    </tbody>
+
+                </table>
+
+            </div>
 
             @else
 
-                <div class="empty-orders">
-                    Belum ada pesanan.
-                </div>
+            <div class="empty-orders">
+                Belum ada pesanan.
+            </div>
 
             @endif
 
@@ -668,277 +688,51 @@
 
             @forelse($reservations as $reservation)
 
-                <div class="mobile-order-card">
+            <div class="mobile-order-card">
 
 
-                    {{-- HEADER CARD --}}
-                    <div class="mobile-order-header">
+                {{-- HEADER CARD --}}
+                <div class="mobile-order-header">
 
-                        <div>
+                    <div>
 
-                            <div class="mobile-order-number">
-                                Pesanan #{{ $loop->iteration }}
-                            </div>
-
-                            <div class="mobile-order-name">
-                                {{ $reservation->user->name ?? 'Tidak diketahui' }}
-                            </div>
-
+                        <div class="mobile-order-number">
+                            Pesanan #{{ $loop->iteration }}
                         </div>
 
-
-                        {{-- STATUS --}}
-                        <div>
-
-                            @if($reservation->statusReservasi == 'menunggu')
-
-                                <span class="status-badge status-menunggu">
-                                    Menunggu
-                                </span>
-
-                            @elseif($reservation->statusReservasi == 'dikonfirmasi')
-
-                                <span class="status-badge status-dikonfirmasi">
-                                    Dikonfirmasi
-                                </span>
-
-                            @elseif($reservation->statusReservasi == 'dibatalkan')
-
-                                <span class="status-badge status-dibatalkan">
-                                    Dibatalkan
-                                </span>
-
-                            @else
-
-                                <span class="status-badge status-default">
-                                    {{ ucfirst($reservation->statusReservasi) }}
-                                </span>
-
-                            @endif
-
+                        <div class="mobile-order-name">
+                            {{ $reservation->user->name ?? 'Tidak diketahui' }}
                         </div>
 
                     </div>
 
 
-                    {{-- INFO --}}
-                    <div class="mobile-order-info">
-
-                        <div>
-
-                            <span class="mobile-info-label">
-                                No. WhatsApp
-                            </span>
-
-                            <span class="mobile-info-value">
-                                {{ $reservation->user->noWA ?? '-' }}
-                            </span>
-
-                        </div>
-
-
-                        <div>
-
-                            <span class="mobile-info-label">
-                                Kamar
-                            </span>
-
-                            <span class="mobile-info-value">
-
-                                @foreach($reservation->detailReservasi as $detail)
-
-                                    {{ $detail->kamar->namaKamar ?? '-' }}
-
-                                    @if(!$loop->last)
-                                        ,
-                                    @endif
-
-                                @endforeach
-
-                            </span>
-
-                        </div>
-
-
-                        <div>
-
-                            <span class="mobile-info-label">
-                                Check In
-                            </span>
-
-                            <span class="mobile-info-value">
-                                {{ \Carbon\Carbon::parse($reservation->tglCekIn)->format('d M Y') }}
-                            </span>
-
-                        </div>
-
-
-                        <div>
-
-                            <span class="mobile-info-label">
-                                Check Out
-                            </span>
-
-                            <span class="mobile-info-value">
-                                {{ \Carbon\Carbon::parse($reservation->tglCekOut)->format('d M Y') }}
-                            </span>
-
-                        </div>
-
-
-                        <div>
-
-                            <span class="mobile-info-label">
-                                Jumlah Tamu
-                            </span>
-
-                            <span class="mobile-info-value">
-                                {{ $reservation->jumlahTamu }} orang
-                            </span>
-
-                        </div>
-
-
-                        <div>
-
-                            <span class="mobile-info-label">
-                                Pembayaran
-                            </span>
-
-                            <span class="mobile-info-value">
-                                {{ $reservation->metodeByr }}
-                            </span>
-
-                        </div>
-
-                    </div>
-
-
-                    {{-- TOTAL --}}
-                    <div class="mobile-order-total">
-
-                        <span>
-                            Total
-                        </span>
-
-                        <strong>
-                            Rp {{ number_format($reservation->hargaTotal, 0, ',', '.') }}
-                        </strong>
-
-                    </div>
-
-
-                    {{-- ACTION --}}
-                    <div class="mobile-action-buttons">
-
-                        {{-- VIEW --}}
-                        <a
-                            href="{{ route('admin.orders.show', $reservation->idReservasi) }}"
-                            class="action-button action-view"
-                            title="Lihat Detail"
-                        >
-
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                stroke-width="2"
-                            >
-
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                                />
-
-                                <circle
-                                    cx="12"
-                                    cy="12"
-                                    r="3"
-                                />
-
-                            </svg>
-
-                        </a>
-
+                    {{-- STATUS --}}
+                    <div>
 
                         @if($reservation->statusReservasi == 'menunggu')
 
-                            {{-- CONFIRM --}}
-                            <form
-                                action="{{ route('admin.orders.confirm', $reservation->idReservasi) }}"
-                                method="POST"
-                                style="flex: 1;"
-                            >
+                        <span class="status-badge status-menunggu">
+                            Menunggu
+                        </span>
 
-                                @csrf
+                        @elseif($reservation->statusReservasi == 'dikonfirmasi')
 
-                                <button
-                                    type="submit"
-                                    class="action-button action-confirm"
-                                    style="width: 100%;"
-                                    title="Konfirmasi"
-                                    onclick="return confirm('Konfirmasi pesanan ini?')"
-                                >
+                        <span class="status-badge status-dikonfirmasi">
+                            Dikonfirmasi
+                        </span>
 
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                        stroke-width="2"
-                                    >
+                        @elseif($reservation->statusReservasi == 'dibatalkan')
 
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            d="M5 13l4 4L19 7"
-                                        />
+                        <span class="status-badge status-dibatalkan">
+                            Dibatalkan
+                        </span>
 
-                                    </svg>
+                        @else
 
-                                </button>
-
-                            </form>
-
-
-                            {{-- CANCEL --}}
-                            <form
-                                action="{{ route('admin.orders.cancel', $reservation->idReservasi) }}"
-                                method="POST"
-                                style="flex: 1;"
-                            >
-
-                                @csrf
-
-                                <button
-                                    type="submit"
-                                    class="action-button action-cancel"
-                                    style="width: 100%;"
-                                    title="Batalkan"
-                                    onclick="return confirm('Batalkan pesanan ini?')"
-                                >
-
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                        stroke-width="2"
-                                    >
-
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            d="M6 18L18 6M6 6l12 12"
-                                        />
-
-                                    </svg>
-
-                                </button>
-
-                            </form>
+                        <span class="status-badge status-default">
+                            {{ ucfirst($reservation->statusReservasi) }}
+                        </span>
 
                         @endif
 
@@ -946,11 +740,225 @@
 
                 </div>
 
+
+                {{-- INFO --}}
+                <div class="mobile-order-info">
+
+                    <div>
+
+                        <span class="mobile-info-label">
+                            No. WhatsApp
+                        </span>
+
+                        <span class="mobile-info-value">
+                            {{ $reservation->user->noWA ?? '-' }}
+                        </span>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="mobile-info-label">
+                            Kamar
+                        </span>
+
+                        <span class="mobile-info-value">
+
+                            @foreach($reservation->detailReservasi as $detail)
+
+                            {{ $detail->kamar->namaKamar ?? '-' }}
+
+                            @if(!$loop->last)
+                            ,
+                            @endif
+
+                            @endforeach
+
+                        </span>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="mobile-info-label">
+                            Check In
+                        </span>
+
+                        <span class="mobile-info-value">
+                            {{ \Carbon\Carbon::parse($reservation->tglCekIn)->format('d M Y') }}
+                        </span>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="mobile-info-label">
+                            Check Out
+                        </span>
+
+                        <span class="mobile-info-value">
+                            {{ \Carbon\Carbon::parse($reservation->tglCekOut)->format('d M Y') }}
+                        </span>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="mobile-info-label">
+                            Jumlah Tamu
+                        </span>
+
+                        <span class="mobile-info-value">
+                            {{ $reservation->jumlahTamu }} orang
+                        </span>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="mobile-info-label">
+                            Pembayaran
+                        </span>
+
+                        <span class="mobile-info-value">
+                            {{ $reservation->metodeByr }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                {{-- TOTAL --}}
+                <div class="mobile-order-total">
+
+                    <span>
+                        Total
+                    </span>
+
+                    <strong>
+                        Rp {{ number_format($reservation->hargaTotal, 0, ',', '.') }}
+                    </strong>
+
+                </div>
+
+
+                {{-- ACTION --}}
+                <div class="mobile-action-buttons">
+
+                    {{-- VIEW --}}
+                    <a
+                        href="{{ route('admin.orders.show', $reservation->idReservasi) }}"
+                        class="action-button action-view"
+                        title="Lihat Detail">
+
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            stroke-width="2">
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="3" />
+
+                        </svg>
+
+                    </a>
+
+
+                    @if($reservation->statusReservasi == 'menunggu')
+
+                    {{-- CONFIRM --}}
+                    <form
+                        action="{{ route('admin.orders.confirm', $reservation->idReservasi) }}"
+                        method="POST"
+                        style="flex: 1;">
+
+                        @csrf
+
+                        <button
+                            type="submit"
+                            class="action-button action-confirm"
+                            style="width: 100%;"
+                            title="Konfirmasi"
+                            onclick="return confirm('Konfirmasi pesanan ini?')">
+
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                stroke-width="2">
+
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M5 13l4 4L19 7" />
+
+                            </svg>
+
+                        </button>
+
+                    </form>
+
+
+                    {{-- CANCEL --}}
+                    <form
+                        action="{{ route('admin.orders.cancel', $reservation->idReservasi) }}"
+                        method="POST"
+                        style="flex: 1;">
+
+                        @csrf
+
+                        <button
+                            type="submit"
+                            class="action-button action-cancel"
+                            style="width: 100%;"
+                            title="Batalkan"
+                            onclick="return confirm('Batalkan pesanan ini?')">
+
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                stroke-width="2">
+
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M6 18L18 6M6 6l12 12" />
+
+                            </svg>
+
+                        </button>
+
+                    </form>
+
+                    @endif
+
+                </div>
+
+            </div>
+
             @empty
 
-                <div class="empty-orders">
-                    Belum ada pesanan.
-                </div>
+            <div class="empty-orders">
+                Belum ada pesanan.
+            </div>
 
             @endforelse
 
