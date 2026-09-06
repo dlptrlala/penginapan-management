@@ -236,4 +236,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/reservasi', [formController::class, 'store'])
         ->name('reservasi.store');
 
+    // Melihat booking milik customer
+    Route::get('/booking-saya', [formController::class, 'myBookings'])
+        ->name('booking.saya');
 });

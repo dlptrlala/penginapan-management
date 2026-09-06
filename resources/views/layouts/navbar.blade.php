@@ -135,6 +135,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('lihatJdwl') }}">Lihat Jadwal</a>
                 </li>
+
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('location') }}">Lokasi</a>
                 </li>
@@ -143,6 +144,43 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('contact') }}">Kontak</a>
+                </li>
+                <li class="nav-item">
+                    @guest
+
+                    <a href="{{ route('login') }}">
+                        Login
+                    </a>
+
+                    <a href="{{ route('register') }}">
+                        Daftar
+                    </a>
+
+                    @else
+
+                    <a href="{{ route('booking.saya') }}">
+                        Booking Saya
+                    </a>
+
+                    <form
+                        action="{{ route('logout') }}"
+                        method="POST"
+                        style="display: inline;">
+                        @csrf
+
+                        <button
+                            type="submit"
+                            style="
+                background: none;
+                border: none;
+                cursor: pointer;
+            ">
+                            Logout
+                        </button>
+
+                    </form>
+
+                    @endguest
                 </li>
             </ul>
         </div>

@@ -97,8 +97,21 @@ class formController extends Controller
         });
 
         return redirect()
-            ->route('rooms.view')
+            // ->route('rooms.view')
+            ->route('booking.saya')
             ->with('success', 'Reservasi berhasil dibuat!');
+    }
+
+    public function myBookings()
+    {
+        $reservations = Reservasi::with([
+            'detailReservasi.kamar'
+        ])
+            ->where('idUser', Auth::id())
+            ->orderBy('tglReservasi', 'desc')
+            ->get();
+
+        return view('bookingSaya', compact('reservations'));
     }
     // public function store(Request $request, $idKamar)
     // {
