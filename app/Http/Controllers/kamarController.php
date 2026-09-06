@@ -203,4 +203,76 @@ class kamarController extends Controller
         // Default: tampilkan semua kamar
         return Kamar::all();
     }
+    public function bookingCalendar()
+    {
+        $reservations = \App\Models\Reservasi::with([
+            'detailReservasi.kamar'
+        ])
+            ->whereIn('statusReservasi', [
+                'menunggu',
+                'dikonfirmasi'
+            ])
+            ->get();
+
+        $events = [];
+
+        foreach ($reservations as $reservation) {
+
+            $checkIn = \Carbon\Carbon::parse(
+                $reservation->tglCekIn
+            );
+
+            $checkOut = \Carbon\Carbon::parse(
+                $reservation->tglCekOut
+            );
+
+            /*
+        |--------------------------------------------------------------------------
+        | Booking berlaku dari check-in
+        | sampai sehari sebelum check-out
+        |--------------------------------------------------------------------------
+        */
+
+            for (
+                $date = $checkIn->copy();
+                $date->lt($checkOut);
+                $date->addDay()
+            ) {
+
+                foreach ($reservation->detailReservasi as $detail) {
+
+                    if (!$detail->kamar) {
+                        continue;
+                    }
+
+                    $events[] = [
+
+                        'title' =>
+                        $detail->kamar->namaKamar,
+
+                        'start' =>
+                        $date->format('Y-m-d'),
+
+                        'allDay' => true,
+
+                        'extendedProps' => [
+
+                            'idKamar' =>
+                            $detail->kamar->idKamar,
+
+                            'namaKamar' =>
+                            $detail->kamar->namaKamar,
+
+                            'status' =>
+                            'Dibooking',
+
+                        ],
+
+                    ];
+                }
+            }
+        }
+
+        return response()->json($events);
+    }
 }

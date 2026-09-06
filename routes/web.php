@@ -240,3 +240,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/booking-saya', [formController::class, 'myBookings'])
         ->name('booking.saya');
 });
+
+Route::get('/booking-calendar', [kamarController::class, 'bookingCalendar'])
+    ->name('booking.calendar');
