@@ -171,7 +171,14 @@ Route::delete('/rooms/{idKamar}', [kamarController::class, 'destroy'])
 Route::get('/admin/orders', [adminController::class, 'orders'])
     ->name('admin.orders');
 
+Route::get('/admin/orders/{idReservasi}', [adminController::class, 'showOrder'])
+    ->name('admin.orders.show');
 
+Route::post('/admin/orders/{idReservasi}/confirm', [adminController::class, 'confirmOrder'])
+    ->name('admin.orders.confirm');
+
+Route::post('/admin/orders/{idReservasi}/cancel', [adminController::class, 'cancelOrder'])
+    ->name('admin.orders.cancel');
 
 /*
 |--------------------------------------------------------------------------
