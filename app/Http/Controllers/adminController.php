@@ -30,8 +30,8 @@ class adminController extends Controller
             'user',
             'detailReservasi.kamar'
         ])
-        ->orderBy('tglReservasi', 'desc')
-        ->get();
+            ->orderBy('tglReservasi', 'desc')
+            ->get();
 
         return view('admin.orders', compact('reservations'));
     }
@@ -93,21 +93,21 @@ class adminController extends Controller
                 'dikonfirmasi'
             ]
         )
-        ->where(
-            'idReservasi',
-            '!=',
-            $reservation->idReservasi
-        )
-        ->where(
-            'tglCekIn',
-            '<',
-            $reservation->tglCekOut
-        )
-        ->where(
-            'tglCekOut',
-            '>',
-            $reservation->tglCekIn
-        );
+            ->where(
+                'idReservasi',
+                '!=',
+                $reservation->idReservasi
+            )
+            ->where(
+                'tglCekIn',
+                '<',
+                $reservation->tglCekOut
+            )
+            ->where(
+                'tglCekOut',
+                '>',
+                $reservation->tglCekIn
+            );
 
 
         // -----------------------------------------
@@ -173,36 +173,36 @@ class adminController extends Controller
                 'idKamar',
                 $idKamar
             )
-            ->whereHas(
-                'reservasi',
-                function ($query) use ($reservation) {
+                ->whereHas(
+                    'reservasi',
+                    function ($query) use ($reservation) {
 
-                    $query
-                        ->whereIn(
-                            'statusReservasi',
-                            [
-                                'menunggu',
-                                'dikonfirmasi'
-                            ]
-                        )
-                        ->where(
-                            'idReservasi',
-                            '!=',
-                            $reservation->idReservasi
-                        )
-                        ->where(
-                            'tglCekIn',
-                            '<',
-                            $reservation->tglCekOut
-                        )
-                        ->where(
-                            'tglCekOut',
-                            '>',
-                            $reservation->tglCekIn
-                        );
-                }
-            )
-            ->exists();
+                        $query
+                            ->whereIn(
+                                'statusReservasi',
+                                [
+                                    'menunggu',
+                                    'dikonfirmasi'
+                                ]
+                            )
+                            ->where(
+                                'idReservasi',
+                                '!=',
+                                $reservation->idReservasi
+                            )
+                            ->where(
+                                'tglCekIn',
+                                '<',
+                                $reservation->tglCekOut
+                            )
+                            ->where(
+                                'tglCekOut',
+                                '>',
+                                $reservation->tglCekIn
+                            );
+                    }
+                )
+                ->exists();
 
 
             if ($bentrokKamar) {
@@ -274,6 +274,159 @@ class adminController extends Controller
                 'success',
                 'Pesanan berhasil dibatalkan.'
             );
+    }
+
+    // =========================
+    // KALENDER BOOKING ADMIN
+    // =========================
+
+    public function bookingCalendar()
+    {
+        return view('admin.bookingCalendar');
+    }
+
+
+    public function bookingCalendarData()
+    {
+        $reservations = Reservasi::with([
+            'user',
+            'detailReservasi.kamar'
+        ])
+            ->whereIn('statusReservasi', [
+                'menunggu',
+                'dikonfirmasi'
+            ])
+            ->get();
+
+        $events = [];
+
+        foreach ($reservations as $reservation) {
+
+            $checkIn = \Carbon\Carbon::parse(
+                $reservation->tglCekIn
+            );
+
+            $checkOut = \Carbon\Carbon::parse(
+                $reservation->tglCekOut
+            );
+
+
+            /*
+        ==========================================
+        SETIAP HARI BOOKING
+        ==========================================
+        */
+
+            for (
+                $date = $checkIn->copy();
+                $date->lt($checkOut);
+                $date->addDay()
+            ) {
+
+                /*
+            ======================================
+            FULL HOUSE
+            ======================================
+            */
+
+                if ($reservation->tipeReservasi === 'full_house') {
+
+                    $events[] = [
+
+                        'title' => 'Full House',
+
+                        'start' => $date->format('Y-m-d'),
+
+                        'allDay' => true,
+
+                        'extendedProps' => [
+
+                            'idReservasi' =>
+                            $reservation->idReservasi,
+
+                            'namaUser' =>
+                            $reservation->user->name ?? '-',
+
+                            'noWA' =>
+                            $reservation->user->noWA ?? '-',
+
+                            'namaKamar' =>
+                            'Seluruh Rumah',
+
+                            'status' =>
+                            $reservation->statusReservasi,
+
+                            'tglCekIn' =>
+                            $reservation->tglCekIn,
+
+                            'tglCekOut' =>
+                            $reservation->tglCekOut,
+
+                        ]
+
+                    ];
+                }
+
+
+                /*
+            ======================================
+            BOOKING KAMAR
+            ======================================
+            */ else {
+
+                    foreach (
+                        $reservation->detailReservasi
+                        as $detail
+                    ) {
+
+                        if (!$detail->kamar) {
+                            continue;
+                        }
+
+
+                        $events[] = [
+
+                            'title' =>
+                            $detail->kamar->namaKamar,
+
+                            'start' =>
+                            $date->format('Y-m-d'),
+
+                            'allDay' => true,
+
+                            'extendedProps' => [
+
+                                'idReservasi' =>
+                                $reservation->idReservasi,
+
+                                'namaUser' =>
+                                $reservation->user->name ?? '-',
+
+                                'noWA' =>
+                                $reservation->user->noWA ?? '-',
+
+                                'namaKamar' =>
+                                $detail->kamar->namaKamar,
+
+                                'status' =>
+                                $reservation->statusReservasi,
+
+                                'tglCekIn' =>
+                                $reservation->tglCekIn,
+
+                                'tglCekOut' =>
+                                $reservation->tglCekOut,
+
+                            ]
+
+                        ];
+                    }
+                }
+            }
+        }
+
+
+        return response()->json($events);
     }
 
 

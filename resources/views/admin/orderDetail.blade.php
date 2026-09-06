@@ -44,7 +44,7 @@
                     </small>
 
                     <div class="fw-semibold">
-                        {{ $reservation->user->namaUser ?? '-' }}
+                        {{ $reservation->user->name ?? '-' }}
                     </div>
                 </div>
 

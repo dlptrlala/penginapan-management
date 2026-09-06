@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
 
     <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+        content="width=device-width, initial-scale=1.0">
 
     <title>
         @yield('title', 'Admin Dashboard - Homestay')
@@ -14,11 +14,9 @@
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
+        rel="stylesheet">
 
     <style>
-
         * {
             box-sizing: border-box;
         }
@@ -387,7 +385,6 @@
             }
 
         }
-
     </style>
 
 </head>
@@ -415,8 +412,7 @@
 
             <a
                 href="{{ route('admin.dashboard') }}"
-                class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
-            >
+                class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                 Dashboard
             </a>
 
@@ -425,8 +421,7 @@
 
             <a
                 href="{{ route('admin.daftarKamar') }}"
-                class="{{ request()->routeIs('admin.daftarKamar') ? 'active' : '' }}"
-            >
+                class="{{ request()->routeIs('admin.daftarKamar') ? 'active' : '' }}">
                 Daftar Kamar
             </a>
 
@@ -435,9 +430,16 @@
 
             <a
                 href="{{ route('admin.orders') }}"
-                class="{{ request()->routeIs('admin.orders*') ? 'active' : '' }}"
-            >
+                class="{{ request()->routeIs('admin.orders*') ? 'active' : '' }}">
                 Pesanan
+            </a>
+
+            {{-- KALENDER --}}
+
+            <a
+                href="{{ route('admin.booking.calendar') }}"
+                class="{{ request()->routeIs('admin.booking.calendar*') ? 'active' : '' }}">
+                Kalender Booking
             </a>
 
 
@@ -445,8 +447,7 @@
 
             <a
                 href="{{ route('admin.reviews') }}"
-                class="{{ request()->routeIs('admin.reviews') ? 'active' : '' }}"
-            >
+                class="{{ request()->routeIs('admin.reviews') ? 'active' : '' }}">
                 Ulasan
             </a>
 
@@ -455,8 +456,7 @@
 
             <a
                 href="{{ route('admin.laporan') }}"
-                class="{{ request()->routeIs('admin.laporan') ? 'active' : '' }}"
-            >
+                class="{{ request()->routeIs('admin.laporan') ? 'active' : '' }}">
                 Laporan
             </a>
 
@@ -490,8 +490,7 @@
 
             <button
                 id="menu-toggle"
-                type="button"
-            >
+                type="button">
                 ☰ &nbsp; Menu
             </button>
 
@@ -501,15 +500,13 @@
             <form
                 action="{{ route('logout') }}"
                 method="POST"
-                style="margin: 0;"
-            >
+                style="margin: 0;">
 
                 @csrf
 
                 <button
                     type="submit"
-                    class="logout-button"
-                >
+                    class="logout-button">
                     Logout
                 </button>
 
@@ -538,7 +535,6 @@
     ====================================================== --}}
 
     <script>
-
         const menuToggle =
             document.getElementById('menu-toggle');
 
@@ -555,7 +551,7 @@
         ==========================================
         */
 
-        menuToggle.addEventListener('click', function () {
+        menuToggle.addEventListener('click', function() {
 
             const isMobile =
                 window.innerWidth <= 992;
@@ -582,7 +578,7 @@
         ==========================================
         */
 
-        overlay.addEventListener('click', function () {
+        overlay.addEventListener('click', function() {
 
             sidebar.classList.remove('mobile-open');
 
@@ -601,9 +597,9 @@
             sidebar.querySelectorAll('a');
 
 
-        sidebarLinks.forEach(function (link) {
+        sidebarLinks.forEach(function(link) {
 
-            link.addEventListener('click', function () {
+            link.addEventListener('click', function() {
 
                 if (window.innerWidth <= 992) {
 
@@ -624,7 +620,7 @@
         ==========================================
         */
 
-        window.addEventListener('resize', function () {
+        window.addEventListener('resize', function() {
 
             if (window.innerWidth > 992) {
 
@@ -635,7 +631,6 @@
             }
 
         });
-
     </script>
 
 

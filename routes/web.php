@@ -182,6 +182,18 @@ Route::post('/admin/orders/{idReservasi}/cancel', [adminController::class, 'canc
 
 /*
 |--------------------------------------------------------------------------
+| ADMIN - KALENDER
+*/
+// halaman kalender
+Route::get('/admin/booking-calendar', [AdminController::class, 'bookingCalendar'])
+    ->name('admin.booking.calendar');
+
+// data booking untuk kalender
+Route::get('/admin/booking-calendar/data', [AdminController::class, 'bookingCalendarData'])
+    ->name('admin.booking.calendar.data');
+
+/*
+|--------------------------------------------------------------------------
 | ADMIN - ULASAN
 |--------------------------------------------------------------------------
 | Halaman admin untuk melihat ulasan customer.
@@ -236,7 +248,7 @@ Route::middleware('auth')->group(function () {
     // Mengecek ketersediaan kamar berdasarkan tanggal
     Route::get('/reservasi/check-availability', [formController::class, 'checkAvailability'])
         ->name('reservasi.checkAvailability');
-        
+
     // Menampilkan form pemesanan kamar
     Route::get('/reservasi/{idKamar}', [formController::class, 'create'])
         ->name('reservasi.create');
